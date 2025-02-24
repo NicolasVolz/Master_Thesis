@@ -27,12 +27,7 @@ do_regression <- function(pain_data, nopain_data, n_pain, n_nopain, id, to_merge
   X_null <- data.frame(id, X, pain)
   X_complete <- left_join(X_null, to_merge, by = "id")
   missing_indices <- which(is.na(X_complete$age) | is.na(X_complete$gender) | X_complete$gender == 7)
-  
-  # Only filter rows if there are missing indices
-  if (length(missing_indices) > 0) {
-    X_complete <- X_complete[-missing_indices, ]
-  }
-  
+  X_complete <- X_complete[-missing_indices, ]
   X_complete$gender <- ifelse(X_complete$gender == 1, 0, 1)
   n <- n_pain + n_nopain
   
@@ -70,11 +65,7 @@ do_regression <- function(pain_data, nopain_data, n_pain, n_nopain, id, to_merge
   nbasis <- 25
   basisobj <- create.fourier.basis(rangeval, nbasis)
   fd_obj <- fd(coef = combined_coefs_matrix, basisobj = basisobj)
-  if (length(missing_indices) > 0) {
-    fd_obj_complete <- fd(coef = combined_coefs_matrix[, -missing_indices], basisobj = basisobj)
-  } else {
-    fd_obj_complete <- fd(coef = combined_coefs_matrix, basisobj = basisobj)
-  }
+  fd_obj_complete <- fd(coef = combined_coefs_matrix[, -missing_indices], basisobj = basisobj)
   
   # Step 3: Set up indices and groups for plotting
   coef_matrix <- fd_obj_complete$coefs
@@ -371,7 +362,7 @@ do_intercept_only_regression <- function(coef_matrix_dif, evaluation_grid, model
 
 
 ###  Read Data
-read_and_transform_data <- function(file_path, sep = ";", dec = ",", xlsx = TRUE, variable = "MovementAcceleration_g") {
+read_and_transform_data <- function(file_path, sep = ";", dec = ",", xlsx = TRUE, variable = "MET") {
   if(xlsx == FALSE){
   data_raw <- read.csv(file_path, sep = sep, header = TRUE, dec = dec)}
   
@@ -1497,7 +1488,7 @@ plot_with_ci <- function(beta_fd, se_beta, title, color = "blue", eval_grid) {
   
   # Plot the beta function with confidence intervals
   plot(eval_grid, beta_hat, type = "l", col = color, lwd = 2, ylim = y_range, main = title,
-       xlab = "Time (hours)", ylab = "Movement Acceleration (g)", xlim = c(0, 1440), xaxt = "n", cex.axis = 1, cex.lab =1 , cex.main = 1)
+       xlab = "Time (hours)", ylab = "MET", xlim = c(0, 1440), xaxt = "n", cex.axis = 1, cex.lab =1 , cex.main = 1)
   
   # Add confidence band
   polygon(c(eval_grid, rev(eval_grid)), c(ci_lower, rev(ci_upper)), col = adjustcolor(color, alpha.f = 0.2), border = NA)
@@ -1532,8 +1523,8 @@ plot_with_ci_age <- function(beta_fd, se_beta, title, color = "blue", eval_grid)
   y_range <- range(c(ci_lower, ci_upper), na.rm = TRUE)
   
   # Plot the beta function with confidence intervals
-  plot(eval_grid, beta_hat, type = "l", col = color, lwd = 2, ylim = c(-0.001,0.0025), main = title,
-       xlab = "Time (hours)", ylab = "Movement Acceleration (g)", xlim = c(0, 1440), xaxt = "n", cex.axis = 1, cex.lab =1 , cex.main = 1)
+  plot(eval_grid, beta_hat, type = "l", col = color, lwd = 2, ylim = c(-0.01,0.025), main = title,
+       xlab = "Time (hours)", ylab = "MET", xlim = c(0, 1440), xaxt = "n", cex.axis = 1, cex.lab =1 , cex.main = 1)
   
   # Add confidence band
   polygon(c(eval_grid, rev(eval_grid)), c(ci_lower, rev(ci_upper)), col = adjustcolor(color, alpha.f = 0.2), border = NA)
@@ -1556,7 +1547,7 @@ plot_with_ci_age <- function(beta_fd, se_beta, title, color = "blue", eval_grid)
 
 # Define the function to plot Pain vs. No Pain for a given group, with customizable legend labels
 plot_pain_vs_no_pain <- function(fd_pain, fd_nopain, mean_fd_pain, mean_fd_nopain, title, 
-                                 legend_labels = c("a", "a", "a", "a"), y_range = range(-0.02, 0.15)) {
+                                 legend_labels = c("a", "a", "a", "a"), y_range = range(0.98, 2.7)) {
   # Set up the plotting area with appropriate margins and adjusted mgp
   par(mar = c(6, 4, 4, 2) + 1, mgp = c(1.5, 0.5, 0))  # Adjust mgp to bring labels closer
   
@@ -1564,7 +1555,7 @@ plot_pain_vs_no_pain <- function(fd_pain, fd_nopain, mean_fd_pain, mean_fd_nopai
   y_range <- y_range
   
   # Plot Pain vs. No Pain
-  plot(fd_pain, main = title, col = adjustcolor("blue", alpha.f = 0.1), xlab = "Time (hours)", ylab = "Movement Acceleration (g)",
+  plot(fd_pain, main = title, col = adjustcolor("blue", alpha.f = 0.1), xlab = "Time (hours)", ylab = "MET",
        xlim = c(0, 1440), ylim = y_range, xaxt = "n", cex.axis = 1)  # Suppress default x-axis and reduce label size
   lines(mean_fd_pain, col = "blue", lwd = 3)
   lines(fd_nopain, col = adjustcolor("red", alpha.f = 0.1))
@@ -1835,7 +1826,7 @@ plot_all_raw_and_overall_mean_functions <- function(results, title = "Raw Mean F
   plot(time_hours, all_raw_means_df[, 1], type = "n", col = "grey", lty = 1, 
        ylab = "Movement Acceleration (g)", xlab = "Time (hours)", 
        main = title, 
-       ylim = c(0, 1), xaxt = 'n', cex.main = 2, cex.lab = 2, cex.axis = 2,
+       ylim = c(0, 4), xaxt = 'n', cex.main = 2, cex.lab = 2, cex.axis = 2,
        mgp = c(4, 1, 0))  # Move axis labels away from the axis
   
   # Plot all raw mean functions as thin lines
@@ -1887,7 +1878,6 @@ plot_combined_smoothed_mean_functions <- function(pain_smoothed_mean_fd, no_pain
 }
 
 
-
 # Function to export the plot and return stats as a data frame row
 save_plot_and_return_stats <- function(result, file_name) {
   # Save the plot
@@ -1907,4 +1897,21 @@ save_plot_and_return_stats <- function(result, file_name) {
 }
 
 
+# Function to export the plot and return stats as a data frame row
+save_plot_and_return_stats <- function(result, file_name) {
+  # Save the plot
+  ggsave(filename = file_name, plot = result$plot, width = 4, height = 6, bg = "white")
+  # Return the stats as a data frame row
+  return(data.frame(
+    Comparison = gsub("plot_", "", file_name),
+    Group_1 = result$group1_stats$label,
+    Group_2 = result$group2_stats$label,
+    Group_1_Count = result$group1_stats$count,
+    Group_2_Count = result$group2_stats$count,
+    Group_1_Mean = result$group1_stats$mean,
+    Group_2_Mean = result$group2_stats$mean,
+    Group_1_Median = result$group1_stats$median,
+    Group_2_Median = result$group2_stats$median
+  ))
+}
 

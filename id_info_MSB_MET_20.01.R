@@ -2,7 +2,7 @@
 #### packages 
 library(dplyr)
 
-### attention! renamed the files e.g. u79 to u079
+
 
 ## fix problem that some ids are e.g. 080 and some are 80
 # Function to format IDs with leading zeros for numbers under 100
@@ -56,9 +56,10 @@ Pain_eps <- data.frame(id2 = Pain_eps_raw$ID, pain_eps = Pain_eps_raw$pain_epis_
 Work_raw <- read.csv(file = "Daily_data_mp5_only_Nicolas_240701.csv", header = TRUE, sep = ";" , dec = ",", na.strings = "NA")
 Work_raw$day <- as.Date(Work_raw$date, format = "%d.%m.%Y")
 Work_raw$day_of_week <- weekdays(Work_raw$day)
-Work_raw$workday <- ifelse(weekdays(Work_raw$day) %in% c("Samstag", "Sonntag"), 0, 1)
+Work_raw$workday <- ifelse(weekdays(Work_raw$day) %in% c("Saturday", "Sunday"), 0, 1)
 
-### wenn NA bei arbeit 1 -> einstzen mit Days of the week. 
+
+## wenn NA bei arbeit 1 -> einstzen mit Days of the week. 
 Work_raw <- Work_raw %>%
   mutate(
     arbeit1 = ifelse(
@@ -117,23 +118,14 @@ merged_no_pain_chron <- merged_df_3[merged_df_3$pain == 2 & !is.na(merged_df_3$p
 pain_ids_chron = merged_pain_chron$id
 no_pain_ids_chron = merged_no_pain_chron$id
 
-### anhand von pain eps
-merged_pain_eps <- merged_df_3[merged_df_3$pain_eps < 35 & !is.na(merged_df_3$pain_eps), ]
-merged_no_pain_eps <- merged_df_3[merged_df_3$pain >= 35 & !is.na(merged_df_3$pain_eps), ]
-
-
-pain_ids_eps = merged_pain_eps$id
-no_pain_ids_eps = merged_no_pain_eps$id
-
-
 ## pain ids anhand von intensität (kroff_40)
 ## pain and no pain grup
-merged_pain_kroff_49 <- merged_df_3[merged_df_3$intensitaet >=50 & !is.na(merged_df_3$intensitaet), ]
-merged_no_pain_kroff_0 <- merged_df_3[merged_df_3$intensitaet == 0 & !is.na(merged_df_3$intensitaet), ]
+merged_pain_kroff_40 <- merged_df_3[merged_df_3$intensitaet >=40 & !is.na(merged_df_3$intensitaet), ]
+merged_no_pain_kroff_40 <- merged_df_3[merged_df_3$intensitaet < 40 & !is.na(merged_df_3$intensitaet), ]
 
 
-pain_ids_kroff_49 = merged_pain_kroff_49$id
-no_pain_ids_kroff_0 = merged_no_pain_kroff_0$id
+pain_ids_kroff_40 = merged_pain_kroff_40$id
+no_pain_ids_kroff_40 = merged_no_pain_kroff_40$id
 
 ## pain ids anhand von intensität (kroff_50)
 ## pain and no pain grup
@@ -245,30 +237,5 @@ cat("Mean non-workdays:", mean_non_workdays, "\n")
 cat("Median non-workdays:", median_non_workdays, "\n")
 
 
-#### verteilung Schmerz
-
-hist(merged_df_3$intensitaet, 
-     breaks = 20,              # Anzahl der Bins (Klassen)
-     main = "Histogramm Intensitaet",  # Titel
-     xlab = "Werte",          # Beschriftung der x-Achse
-     ylab = "Häufigkeit",     # Beschriftung der y-Achse
-     col = "lightblue",       # Farbe der Balken
-     border = "black")        # Farbe der Balkengrenzen
 
 
-hist(merged_df_3$beeintraechtigung, 
-           breaks = 20,              # Anzahl der Bins (Klassen)
-           main = "Histogramm Beeintraechtigung",  # Titel
-           xlab = "Werte",          # Beschriftung der x-Achse
-           ylab = "Häufigkeit",     # Beschriftung der y-Achse
-           col = "lightblue",       # Farbe der Balken
-           border = "black")        # Farbe der Balkengrenzen
-
-
-hist(merged_df_3$pain_eps, 
-     breaks = 20,              # Anzahl der Bins (Klassen)
-     main = "Histogramm Pain Eps",  # Titel
-     xlab = "Werte",          # Beschriftung der x-Achse
-     ylab = "Häufigkeit",     # Beschriftung der y-Achse
-     col = "lightblue",       # Farbe der Balken
-     border = "black")        # Farbe der Balkengrenzen

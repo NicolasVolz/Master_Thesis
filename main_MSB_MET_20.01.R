@@ -198,9 +198,6 @@ length(pain_files)
 length(no_pain_files)
 
 
-## bring in right format for the names of excel sheets
-
-
 not_in_pain_or_no_pain <- file_list[!(standardized_extracted_ids %in% c(pain_ids, no_pain_ids))]
 
 
@@ -316,7 +313,6 @@ setwd("/Users/nicol/Desktop/SP5/Results/")
 
 
 to_merge = data.frame(id = merged_df_3$id, age=merged_df_3$age, gender=merged_df_3$gender)
-to_merge = na.omit(to_merge)
 ### work day model 
 work_day_model = do_regression(
   pain_data = filtered_results_pain_work,
