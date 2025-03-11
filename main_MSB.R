@@ -15,7 +15,7 @@ no_pain_ids = no_pain_ids_chron
 
 ####################### one Data Set Example ###################################
 
-setwd("/Users/nicol/Desktop/SP5/data/ID Results für Nicolas Volz")
+#setwd("")
 file_path <- "Results.csv"
 
 # Step 1: Read data
@@ -24,7 +24,7 @@ data_wide <- read_and_transform_data(file_path, xlsx = FALSE)
 scree_plots <- determine_optimal_nbasis(data_wide)
 
 
-setwd("/Users/nicol/Desktop/SP5/Results/")
+#setwd("")
 # To display a specific plot:
 print(scree_plots[[5]])  # Print the second plot, etc.
 
@@ -99,7 +99,7 @@ plot_all_functions_with_mean(smoothed_data_orig)
 
 ### split into work = non_work
 work_status <- c(1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0) ##example 
-setwd("/Users/nicol/Desktop/SP5/data/ID Results für Nicolas Volz")
+#setwd("")
 # Step 1: Read data
 data_wide <- read_and_transform_data(file_path, xlsx = FALSE)
 
@@ -148,7 +148,7 @@ plot_combined_functions_with_mean(smoothed_data_work, smoothed_data_non_work)
 
 #################### Analysis with complete data set ###########################
 
-setwd("/Users/nicol/Desktop/SP5/data/ID Results für Nicolas Volz/NicolasVolz_Results_IDs/")
+#setwd("")
 
 # List all .xlsx files in the directory
 file_list <- list.files(pattern = "*.xlsx")
@@ -206,7 +206,7 @@ not_in_pain_or_no_pain <- file_list[!(standardized_extracted_ids %in% c(pain_ids
 
 
 
-setwd("/Users/nicol/Desktop/SP5/data/ID Results für Nicolas Volz/NicolasVolz_Results_IDs/")
+#setwd("")
 ##################### split work / no_work 
 
 # Run the processing for all files
@@ -218,7 +218,7 @@ results_1_pain <- process_all_files_1(pain_files, work_status_list)
 results_1_no_pain <- process_all_files_1(no_pain_files, work_status_list)
 
 
-setwd("/Users/nicol/Desktop/SP5/Results/")
+#setwd("")
 
 
 results_1 <- Filter(Negate(is.null), results_1)
@@ -312,7 +312,7 @@ evaluation_grid <- seq(0, 1440, by = 1)  # 1441 points
 
 
 
-setwd("/Users/nicol/Desktop/SP5/Results/")
+#setwd("")
 
 
 to_merge = data.frame(id = merged_df_3$id, age=merged_df_3$age, gender=merged_df_3$gender)
@@ -518,7 +518,7 @@ results_intercept_only <- do_intercept_only_regression(coef_matrix_dif, evaluati
 
 ################### OVERAL MEASURE BY STEPS#####################################
 
-setwd("/Users/nicol/Desktop/SP5/data/ID Results für Nicolas Volz/NicolasVolz_Results_IDs/")
+#setwd("")
 
 ############################ step counts 
 results_steps <- process_all_files_steps(file_list, work_status_list)
@@ -542,7 +542,7 @@ results_women$mean_steps <- rowMeans(results_women[,-1], na.rm = TRUE)  # Exclud
 
 
 
-setwd("/Users/nicol/Desktop/SP5/Results/")
+#setwd("")
 
 # Initialize an empty data frame to hold all the results
 all_stats <- data.frame()

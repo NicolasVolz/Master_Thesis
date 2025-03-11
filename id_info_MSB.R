@@ -18,7 +18,7 @@ format_id <- function(id) {
 }
 
 
-setwd("/Users/nicol/Desktop/SP5/data/ID Results für Nicolas Volz/")
+#setwd("")
 
 ################################################################################
 ##############################---read raw data-----#############################
